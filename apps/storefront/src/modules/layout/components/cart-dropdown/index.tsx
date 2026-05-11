@@ -82,10 +82,10 @@ const CartDropdown = ({
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
-            className="hover:text-ui-fg-base"
+            className="text-white hover:text-spd-cream transition-colors"
             href="/cart"
             data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
+          >{`Winkelwagen (${totalItems})`}</LocalizedClientLink>
         </PopoverButton>
         <Transition
           show={cartDropdownOpen}

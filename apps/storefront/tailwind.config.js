@@ -20,6 +20,13 @@ module.exports = {
         padding: "padding-top padding-right padding-bottom padding-left",
       },
       colors: {
+        spd: {
+          green: "#1B5C2F",
+          "green-dark": "#154824",
+          "green-light": "#236B38",
+          cream: "#EDEAE3",
+          "cream-dark": "#E0DDD6",
+        },
         grey: {
           0: "#FFFFFF",
           5: "#F9FAFB",
@@ -68,6 +75,7 @@ module.exports = {
           "Ubuntu",
           "sans-serif",
         ],
+        artico: ["Artico", "sans-serif"],
       },
       keyframes: {
         ring: {
