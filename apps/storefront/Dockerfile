@@ -59,7 +59,7 @@ COPY --from=build --chown=nextjs:nodejs /app/apps/storefront/public ./apps/store
 USER nextjs
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:8000/ || exit 1
+  CMD wget -qO- http://127.0.0.1:8000/api/health || exit 1
 
 EXPOSE 8000
 
