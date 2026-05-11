@@ -36,6 +36,11 @@ ENV NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 ENV NEXT_PUBLIC_DEFAULT_REGION=$NEXT_PUBLIC_DEFAULT_REGION
 
+# Accept the server-side internal URL build arg but pin SSG fetches to the public URL.
+# The real internal URL is injected by Coolify as a runtime container env var.
+ARG MEDUSA_BACKEND_URL
+ENV MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+
 RUN cd apps/storefront && pnpm build
 
 
