@@ -1,0 +1,26 @@
+import { getBaseURL } from "@lib/util/env"
+import { Metadata } from "next"
+import "styles/globals.css"
+
+export const metadata: Metadata = {
+  metadataBase: new URL(getBaseURL()),
+  title: {
+    default: "SmartPowerDeals",
+    template: "%s — SmartPowerDeals",
+  },
+  description: "SmartPowerDeals — slimme deals voor smart living.",
+  openGraph: {
+    siteName: "SmartPowerDeals",
+    type: "website",
+  },
+}
+
+export default function RootLayout(props: { children: React.ReactNode }) {
+  return (
+    <html lang="nl" data-mode="light">
+      <body>
+        <main className="relative">{props.children}</main>
+      </body>
+    </html>
+  )
+}
