@@ -1,6 +1,6 @@
-# Webshop 3D Printing
+# SmartPowerDeals
 
-Medusa.js v2 webshop voor een 3D printing business. Naast een normale e-commerce shop voor eigen ontwerpen kunnen klanten zelf STL/3MF bestanden uploaden en automatisch een prijs krijgen op basis van gewicht × tarief.
+Medusa.js v2 webshop voor SmartPowerDeals — slimme deals voor smart living. Elektronica, smart home producten en gadgets voor NL en BE.
 
 **Stack:** Medusa v2 (Node 20) · Next.js 15 storefront · Postgres 16 · Redis 7 · MinIO (S3) · Mollie payments · SMTP email · Coolify deploy.
 
@@ -73,6 +73,6 @@ Restart de storefront daarna.
 
 ## Roadmap
 
-- **Fase 1 (huidig)** — voorraadshop met Mollie checkout en SMTP mail
-- **Fase 2** — STL/3MF upload + auto-prijs flow
-- **Fase 3** — B2B met BTW-verlegging + custom print queue admin
+- **Fase 1 (huidig)** — voorraadshop met Mollie checkout (iDEAL / creditcard / Bancontact) en SMTP mail
+- **Fase 2** — uitgebreid productcatalogus, bundelkortingen, B2B accounts
+- **Fase 3** — automatische prijsberekeningtool, loyaliteitsprogramma

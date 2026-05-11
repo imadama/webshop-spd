@@ -1,6 +1,6 @@
 "use client"
 
-import { isManual, isStripeLike } from "@lib/constants"
+import { isManual, isMollie, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
@@ -35,12 +35,20 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
           data-testid={dataTestId}
         />
       )
+    case isMollie(paymentSession?.provider_id):
+      return (
+        <MolliePaymentButton
+          notReady={notReady}
+          cart={cart}
+          data-testid={dataTestId}
+        />
+      )
     case isManual(paymentSession?.provider_id):
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
       )
     default:
-      return <Button disabled>Select a payment method</Button>
+      return <Button disabled>Selecteer een betaalmethode</Button>
   }
 }
 
@@ -146,6 +154,52 @@ const StripePaymentButton = ({
       <ErrorMessage
         error={errorMessage}
         data-testid="stripe-payment-error-message"
+      />
+    </>
+  )
+}
+
+const MolliePaymentButton = ({
+  cart,
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  cart: HttpTypes.StoreCart
+  notReady: boolean
+  "data-testid"?: string
+}) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const session = cart.payment_collection?.payment_sessions?.find((s) =>
+    s.provider_id?.startsWith("pp_mollie_")
+  )
+  const checkoutUrl = (session?.data as Record<string, unknown> | undefined)
+    ?.checkout_url as string | undefined
+
+  const handlePayment = () => {
+    if (!checkoutUrl) {
+      setErrorMessage("Geen betaal-URL beschikbaar. Probeer het opnieuw.")
+      return
+    }
+    setSubmitting(true)
+    window.location.href = checkoutUrl
+  }
+
+  return (
+    <>
+      <Button
+        disabled={notReady || !checkoutUrl}
+        isLoading={submitting}
+        onClick={handlePayment}
+        size="large"
+        data-testid={dataTestId}
+      >
+        Doorgaan naar betalen
+      </Button>
+      <ErrorMessage
+        error={errorMessage}
+        data-testid="mollie-payment-error-message"
       />
     </>
   )
