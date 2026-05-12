@@ -1,5 +1,4 @@
 import { clx } from "@modules/common/components/ui"
-
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
 
@@ -18,41 +17,40 @@ export default function ProductPrice({
   const selectedPrice = variant ? variantPrice : cheapestPrice
 
   if (!selectedPrice) {
-    return <div className="block w-32 h-9 bg-gray-100 animate-pulse" />
+    return <div className="h-10 bg-spd-cream-dark animate-pulse rounded-lg" />
   }
 
   return (
-    <div className="flex flex-col text-ui-fg-base">
-      <span
-        className={clx("text-xl-semi", {
-          "text-ui-fg-interactive": selectedPrice.price_type === "sale",
-        })}
-      >
-        {!variant && "From "}
+    <div className="flex flex-col gap-1 mb-4">
+      <div className="flex items-baseline gap-3">
+        {!variant && (
+          <span className="text-sm text-grey-50">Vanaf</span>
+        )}
         <span
+          className={clx("text-3xl font-bold", {
+            "text-red-600": selectedPrice.price_type === "sale",
+            "text-spd-green": selectedPrice.price_type !== "sale",
+          })}
           data-testid="product-price"
           data-value={selectedPrice.calculated_price_number}
         >
           {selectedPrice.calculated_price}
         </span>
-      </span>
-      {selectedPrice.price_type === "sale" && (
-        <>
-          <p>
-            <span className="text-ui-fg-subtle">Original: </span>
-            <span
-              className="line-through"
-              data-testid="original-product-price"
-              data-value={selectedPrice.original_price_number}
-            >
-              {selectedPrice.original_price}
-            </span>
-          </p>
-          <span className="text-ui-fg-interactive">
-            -{selectedPrice.percentage_diff}%
+        {selectedPrice.price_type === "sale" && (
+          <span
+            className="text-lg text-grey-40 line-through"
+            data-testid="original-product-price"
+          >
+            {selectedPrice.original_price}
           </span>
-        </>
+        )}
+      </div>
+      {selectedPrice.price_type === "sale" && (
+        <span className="inline-flex items-center bg-red-100 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full w-fit">
+          -{selectedPrice.percentage_diff}% korting
+        </span>
       )}
+      <p className="text-xs text-grey-50 mt-1">Inclusief BTW · Gratis verzending</p>
     </div>
   )
 }

@@ -116,19 +116,14 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   <ChevronDown />
                 </div>
               </Button>}
-              <Button
+              <button
                 onClick={handleAddToCart}
                 disabled={!inStock || !variant}
-                className="w-full"
-                isLoading={isAdding}
                 data-testid="mobile-cart-button"
+                className="w-full h-12 rounded-full bg-spd-green hover:bg-spd-green-dark disabled:opacity-50 text-white font-semibold text-sm transition-colors"
               >
-                {!variant
-                  ? "Select variant"
-                  : !inStock
-                  ? "Out of stock"
-                  : "Add to cart"}
-              </Button>
+                {isAdding ? "Toevoegen..." : !variant ? "Kies variant" : !inStock ? "Niet op voorraad" : "In winkelwagen"}
+              </button>
             </div>
           </div>
         </Transition>
