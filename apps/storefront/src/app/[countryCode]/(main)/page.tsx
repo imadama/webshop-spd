@@ -3,6 +3,8 @@ import { Metadata } from "next"
 import Hero from "@modules/home/components/hero"
 import Categories from "@modules/home/components/categories"
 import ProductsPreview from "@modules/home/components/products-preview"
+import UspBar from "@modules/home/components/usp-bar"
+import Faq from "@modules/home/components/faq"
 
 export const metadata: Metadata = {
   title: {
@@ -23,6 +25,8 @@ export default async function Home(props: {
       <Hero />
       <Categories />
       <ProductsPreview countryCode={countryCode} />
+      <UspBar />
+      <Faq />
     </>
   )
 }
