@@ -7,7 +7,6 @@ import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
-import SideMenu from "@modules/layout/components/side-menu"
 import AnnouncementBar from "@modules/layout/components/announcement-bar"
 
 export default async function Nav() {
@@ -22,10 +21,6 @@ export default async function Nav() {
       <AnnouncementBar />
       <header className="relative mx-auto border-b border-spd-green-dark duration-200 bg-spd-green">
         <nav className="content-container txt-xsmall-plus text-white flex items-center justify-between w-full h-16 text-small-regular gap-4">
-          <div className="flex items-center h-full gap-4">
-            <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
-          </div>
-
           <div className="flex items-center h-full shrink-0">
             <LocalizedClientLink href="/" data-testid="nav-store-link" className="flex items-center">
               <Image
@@ -92,7 +87,7 @@ export default async function Nav() {
             <LocalizedClientLink href="/store" className="hover:text-spd-cream transition-colors">Alle producten</LocalizedClientLink>
             <LocalizedClientLink href="/categories/laadkabels" className="hover:text-spd-cream transition-colors">Laadkabels</LocalizedClientLink>
             <LocalizedClientLink href="/categories/thuisladers" className="hover:text-spd-cream transition-colors">Thuisladers</LocalizedClientLink>
-            <LocalizedClientLink href="/categories/laadpalen" className="hover:text-spd-cream transition-colors">Laadpalen</LocalizedClientLink>
+            <LocalizedClientLink href="/categories/laadpaal" className="hover:text-spd-cream transition-colors">Laadpalen</LocalizedClientLink>
             <LocalizedClientLink href="/categories/verloopkabels" className="hover:text-spd-cream transition-colors">Verloopkabels</LocalizedClientLink>
           </nav>
         </div>
