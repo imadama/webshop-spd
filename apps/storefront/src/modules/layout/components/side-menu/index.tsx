@@ -11,23 +11,30 @@ import CountrySelect from "../country-select"
 import LanguageSelect from "../language-select"
 import { Locale } from "@lib/data/locales"
 
-
-const SideMenuItems = {
-  Home: "/",
-  Store: "/store",
-  Account: "/account",
-  Cart: "/cart",
-}
+const generalLinks = [
+  { label: "Alle producten", href: "/store" },
+  { label: "Mijn account", href: "/account" },
+  { label: "Winkelwagen", href: "/cart" },
+]
 
 type SideMenuProps = {
   regions: HttpTypes.StoreRegion[] | null
   locales: Locale[] | null
   currentLocale: string | null
+  categories: HttpTypes.StoreProductCategory[] | null
 }
 
-const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
+const SideMenu = ({
+  regions,
+  locales,
+  currentLocale,
+  categories,
+}: SideMenuProps) => {
   const countryToggleState = useToggleState()
   const languageToggleState = useToggleState()
+
+  const topLevelCategories =
+    categories?.filter((c) => !c.parent_category) ?? []
 
   return (
     <div className="h-full">
@@ -38,15 +45,29 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
               <div className="relative flex h-full">
                 <Popover.Button
                   data-testid="nav-menu-button"
-                  className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none text-white hover:text-spd-cream"
+                  className="relative h-full flex items-center gap-x-2 transition-colors ease-out duration-200 focus:outline-none text-white hover:text-spd-cream"
+                  aria-label="Menu openen"
                 >
-                  Menu
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
                 </Popover.Button>
               </div>
 
               {open && (
                 <div
-                  className="fixed inset-0 z-[50] bg-black/0 pointer-events-auto"
+                  className="fixed inset-0 z-[50] bg-black/40"
                   onClick={close}
                   data-testid="side-menu-backdrop"
                 />
@@ -55,40 +76,103 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
               <Transition
                 show={open}
                 as={Fragment}
-                enter="transition ease-out duration-150"
-                enterFrom="opacity-0"
-                enterTo="opacity-100 backdrop-blur-2xl"
+                enter="transition ease-out duration-200"
+                enterFrom="opacity-0 -translate-x-4"
+                enterTo="opacity-100 translate-x-0"
                 leave="transition ease-in duration-150"
-                leaveFrom="opacity-100 backdrop-blur-2xl"
-                leaveTo="opacity-0"
+                leaveFrom="opacity-100 translate-x-0"
+                leaveTo="opacity-0 -translate-x-4"
               >
-                <PopoverPanel className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm text-ui-fg-on-color m-2 backdrop-blur-2xl">
+                <PopoverPanel className="flex flex-col fixed inset-y-0 left-0 w-[85vw] max-w-sm z-[51] text-sm">
                   <div
                     data-testid="nav-menu-popup"
-                    className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-rounded justify-between p-6"
+                    className="flex flex-col h-full bg-spd-green overflow-y-auto"
                   >
-                    <div className="flex justify-end" id="xmark">
-                      <button data-testid="close-menu-button" onClick={close}>
+                    <div className="flex items-center justify-between px-6 h-16 border-b border-spd-green-dark shrink-0">
+                      <span className="text-white font-semibold">Menu</span>
+                      <button
+                        data-testid="close-menu-button"
+                        onClick={close}
+                        className="text-white hover:text-spd-cream transition-colors"
+                        aria-label="Menu sluiten"
+                      >
                         <XMark />
                       </button>
                     </div>
-                    <ul className="flex flex-col gap-6 items-start justify-start">
-                      {Object.entries(SideMenuItems).map(([name, href]) => {
-                        return (
-                          <li key={name}>
-                            <LocalizedClientLink
-                              href={href}
-                              className="text-3xl leading-10 hover:text-ui-fg-disabled"
-                              onClick={close}
-                              data-testid={`${name.toLowerCase()}-link`}
+
+                    <div className="px-6 py-5 border-b border-spd-green-dark">
+                      <form action="/store" method="get">
+                        <div className="relative w-full">
+                          <input
+                            type="search"
+                            name="q"
+                            placeholder="Zoek naar producten..."
+                            aria-label="Zoek naar producten"
+                            className="w-full h-10 pl-4 pr-10 rounded-full text-sm text-grey-80 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-spd-cream"
+                          />
+                          <button
+                            type="submit"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-spd-green"
+                            aria-label="Zoeken"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
                             >
-                              {name}
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    {topLevelCategories.length > 0 && (
+                      <div className="px-6 py-5 border-b border-spd-green-dark">
+                        <span className="text-spd-cream text-xs font-semibold uppercase tracking-wide">
+                          Categorieën
+                        </span>
+                        <ul className="flex flex-col mt-3">
+                          {topLevelCategories.map((category) => (
+                            <li key={category.id}>
+                              <LocalizedClientLink
+                                href={`/categories/${category.handle}`}
+                                className="block py-2 text-lg text-white hover:text-spd-cream transition-colors"
+                                onClick={close}
+                                data-testid="category-link"
+                              >
+                                {category.name}
+                              </LocalizedClientLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="px-6 py-5">
+                      <ul className="flex flex-col">
+                        {generalLinks.map((link) => (
+                          <li key={link.href}>
+                            <LocalizedClientLink
+                              href={link.href}
+                              className="block py-2 text-lg text-white hover:text-spd-cream transition-colors"
+                              onClick={close}
+                            >
+                              {link.label}
                             </LocalizedClientLink>
                           </li>
-                        )
-                      })}
-                    </ul>
-                    <div className="flex flex-col gap-y-6">
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="mt-auto flex flex-col gap-y-4 px-6 py-6 border-t border-spd-green-dark text-white">
                       {!!locales?.length && (
                         <div
                           className="flex justify-between"
@@ -126,9 +210,8 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
                           )}
                         />
                       </div>
-                      <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Medusa Store. All rights
-                        reserved.
+                      <Text className="txt-compact-small text-white/50">
+                        © {new Date().getFullYear()} SmartPowerDeals
                       </Text>
                     </div>
                   </div>

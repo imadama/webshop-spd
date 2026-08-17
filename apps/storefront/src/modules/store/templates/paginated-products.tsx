@@ -1,5 +1,6 @@
 import { listProductsWithSort } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -12,6 +13,7 @@ type PaginatedProductsParams = {
   category_id?: string[]
   id?: string[]
   order?: string
+  q?: string
 }
 
 export default async function PaginatedProducts({
@@ -20,6 +22,7 @@ export default async function PaginatedProducts({
   collectionId,
   categoryId,
   productsIds,
+  q,
   countryCode,
 }: {
   sortBy?: SortOptions
@@ -27,6 +30,7 @@ export default async function PaginatedProducts({
   collectionId?: string
   categoryId?: string
   productsIds?: string[]
+  q?: string
   countryCode: string
 }) {
   const queryParams: PaginatedProductsParams = {
@@ -43,6 +47,10 @@ export default async function PaginatedProducts({
 
   if (productsIds) {
     queryParams["id"] = productsIds
+  }
+
+  if (q) {
+    queryParams["q"] = q
   }
 
   if (sortBy === "created_at") {
@@ -64,10 +72,47 @@ export default async function PaginatedProducts({
     countryCode,
   })
 
+  if (!products.length) {
+    return (
+      <div
+        className="flex flex-col items-start gap-y-3 py-12"
+        data-testid="no-products-message"
+      >
+        <p className="text-base-semi">
+          {q
+            ? `Geen producten gevonden voor “${q}”.`
+            : "Er staan hier nog geen producten."}
+        </p>
+        {q && (
+          <>
+            <p className="text-base-regular text-ui-fg-subtle">
+              Probeer een andere zoekterm, bijvoorbeeld het type kabel of het
+              vermogen dat je zoekt.
+            </p>
+            <LocalizedClientLink
+              href="/store"
+              className="text-base-regular underline hover:text-spd-green transition-colors"
+            >
+              Bekijk alle producten
+            </LocalizedClientLink>
+          </>
+        )}
+      </div>
+    )
+  }
+
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
 
   return (
     <>
+      {q && (
+        <p
+          className="mb-6 text-base-regular text-ui-fg-subtle"
+          data-testid="search-result-count"
+        >
+          {count === 1 ? "1 product gevonden" : `${count} producten gevonden`}
+        </p>
+      )}
       <ul
         className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8"
         data-testid="products-list"
