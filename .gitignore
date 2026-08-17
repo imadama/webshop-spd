@@ -62,6 +62,8 @@ Thumbs.db
 **/.DS_Store
 # Claude Code local
 .claude/
+# Persoonlijke boot-config voor de Obsidian memory vault — repo is publiek, dus nooit committen
+CLAUDE.md
 
 # TypeScript incremental build info
 **/tsconfig.tsbuildinfo
