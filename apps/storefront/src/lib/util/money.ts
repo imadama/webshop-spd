@@ -13,7 +13,8 @@ export const convertToLocale = ({
   currency_code,
   minimumFractionDigits,
   maximumFractionDigits,
-  locale = "en-US",
+  // Nederlandse notatie: "€ 1.228,39" in plaats van "€1,228.39"
+  locale = "nl-NL",
 }: ConvertToLocaleParams) => {
   return currency_code && !isEmpty(currency_code)
     ? new Intl.NumberFormat(locale, {
