@@ -30,7 +30,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   return {
     title: "Alle producten",
     description:
-      "Bekijk alle laadkabels, thuisladers en laadpalen van SmartPowerDeals. Gratis verzending in NL en BE.",
+      "Bekijk laadkabels, mobiele laders, laadpunten en energie voor thuis bij SmartPowerDeals.",
   }
 }
 

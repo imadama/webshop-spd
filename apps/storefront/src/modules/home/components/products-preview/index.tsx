@@ -1,80 +1,116 @@
-import { listProducts } from "@lib/data/products"
-import { getRegion } from "@lib/data/regions"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Image from "next/image"
+import { ArrowRight } from "@medusajs/icons"
+import { HttpTypes } from "@medusajs/types"
+import {
+  getCategoryPresentation,
+  getProductImage,
+  getProductLabel,
+} from "@lib/util/catalog-presentation"
 import { getProductPrice } from "@lib/util/get-product-price"
-import Thumbnail from "@modules/products/components/thumbnail"
+import { convertToLocale } from "@lib/util/money"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
-export default async function ProductsPreview({
-  countryCode,
+export default function ProductsPreview({
+  products,
 }: {
-  countryCode: string
+  products: HttpTypes.StoreProduct[]
 }) {
-  const region = await getRegion(countryCode)
-  if (!region) return null
-
-  const {
-    response: { products },
-  } = await listProducts({
-    regionId: region.id,
-    queryParams: {
-      limit: 4,
-      fields: "*variants.calculated_price",
-    },
-  })
-
-  if (!products?.length) return null
+  const illustrated = products.filter(
+    (product) => product.handle && getProductImage(product),
+  )
+  const selection: HttpTypes.StoreProduct[] = []
+  for (const handle of [
+    "laadkabels",
+    "thuisladers",
+    "laadpaal",
+    "thuisbatterijen",
+  ]) {
+    const product = illustrated.find((p) =>
+      p.categories?.some((category) => category.handle === handle),
+    )
+    if (product && !selection.some((p) => p.id === product.id))
+      selection.push(product)
+  }
+  for (const product of illustrated) {
+    if (selection.length >= 4) break
+    if (!selection.some((p) => p.id === product.id)) selection.push(product)
+  }
+  if (!selection.length) return null
 
   return (
-    <section className="content-container py-12">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="font-artico text-2xl small:text-3xl text-spd-green uppercase tracking-wide">
-          Populaire producten
-        </h2>
-        <LocalizedClientLink
-          href="/store"
-          className="text-spd-green text-sm font-semibold hover:text-spd-green-dark transition-colors flex items-center gap-1"
-        >
-          Meer bekijken
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </LocalizedClientLink>
-      </div>
-      <div className="grid grid-cols-2 small:grid-cols-4 gap-4 small:gap-6">
-        {products.map((product) => {
-          const { cheapestPrice } = getProductPrice({ product })
-          return (
-            <LocalizedClientLink
-              key={product.id}
-              href={`/products/${product.handle}`}
-              className="group bg-white rounded-xl overflow-hidden border border-spd-cream-dark hover:border-spd-green hover:shadow-md transition-all duration-200"
-            >
-              <div className="aspect-square w-full bg-spd-cream overflow-hidden">
-                <Thumbnail
-                  thumbnail={product.thumbnail}
-                  images={product.images}
-                  size="square"
-                  className="!rounded-none !shadow-none"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-sm font-semibold text-grey-80 line-clamp-2 mb-2 group-hover:text-spd-green transition-colors">
-                  {product.title}
-                </h3>
-                {cheapestPrice && (
-                  <div className="text-spd-green font-bold text-base">
-                    {cheapestPrice.calculated_price}
-                  </div>
-                )}
-                <div className="mt-3">
-                  <span className="inline-block bg-spd-green text-white text-xs font-semibold px-3 py-1.5 rounded-full group-hover:bg-spd-green-dark transition-colors">
-                    Bekijk product
-                  </span>
+    <section className="spd-products-section" aria-labelledby="products-title">
+      <div className="spd-container spd-section">
+        <div className="spd-section-heading">
+          <div>
+            <p className="spd-eyebrow">Om mee te beginnen</p>
+            <h2 id="products-title">Uit ons assortiment</h2>
+          </div>
+          <LocalizedClientLink href="/store" className="spd-text-link">
+            Bekijk alles <ArrowRight aria-hidden="true" />
+          </LocalizedClientLink>
+        </div>
+        <div className="spd-product-grid">
+          {selection.map((product) => {
+            const { cheapestPrice } = getProductPrice({ product })
+            const category = product.categories?.[0]
+            const prices =
+              product.variants
+                ?.map((variant) => variant.calculated_price?.calculated_amount)
+                .filter((amount) => amount != null) ?? []
+            const hasPriceRange = new Set(prices).size > 1
+            return (
+              <LocalizedClientLink
+                key={product.id}
+                href={`/products/${product.handle}`}
+                className="spd-product-card"
+              >
+                <div className="spd-product-card-image">
+                  <Image
+                    src={getProductImage(product)!}
+                    alt={getProductLabel(product.title)}
+                    fill
+                    sizes="(max-width: 767px) 45vw, (max-width: 1023px) 42vw, 280px"
+                    className="object-contain"
+                  />
                 </div>
-              </div>
-            </LocalizedClientLink>
-          )
-        })}
+                <div className="spd-product-card-body">
+                  {category && (
+                    <p className="spd-product-category">
+                      {getCategoryPresentation(category).label}
+                    </p>
+                  )}
+                  <h3>{getProductLabel(product.title)}</h3>
+                  <div className="spd-product-card-bottom">
+                    <div>
+                      {cheapestPrice ? (
+                        <>
+                          <span className="spd-card-price">
+                            {hasPriceRange && <small>Vanaf </small>}
+                            {convertToLocale({
+                              amount: cheapestPrice.calculated_price_number,
+                              currency_code: cheapestPrice.currency_code,
+                              locale: "nl-NL",
+                            })}
+                          </span>
+                          <span className="spd-card-detail">
+                            Bekijk uitvoering en details
+                          </span>
+                        </>
+                      ) : (
+                        <span className="spd-card-detail">
+                          Bekijk product en prijs
+                        </span>
+                      )}
+                    </div>
+                    <span className="spd-card-arrow">
+                      <ArrowRight aria-hidden="true" />
+                    </span>
+                  </div>
+                </div>
+              </LocalizedClientLink>
+            )
+          })}
+        </div>
       </div>
     </section>
   )

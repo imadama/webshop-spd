@@ -17,15 +17,17 @@ export default function ProductPrice({
   const selectedPrice = variant ? variantPrice : cheapestPrice
 
   if (!selectedPrice) {
-    return <div className="h-10 bg-spd-cream-dark animate-pulse rounded-lg" />
+    return (
+      <p className="text-sm text-grey-50">
+        Er is nog geen prijs beschikbaar voor deze uitvoering.
+      </p>
+    )
   }
 
   return (
-    <div className="flex flex-col gap-1 mb-4">
+    <div className="spd-product-price">
       <div className="flex items-baseline gap-3">
-        {!variant && (
-          <span className="text-sm text-grey-50">Vanaf</span>
-        )}
+        {!variant && <span className="text-sm text-grey-50">Vanaf</span>}
         <span
           className={clx("text-3xl font-bold", {
             "text-red-600": selectedPrice.price_type === "sale",
@@ -50,7 +52,7 @@ export default function ProductPrice({
           -{selectedPrice.percentage_diff}% korting
         </span>
       )}
-      <p className="text-xs text-grey-50 mt-1">Inclusief BTW · Gratis verzending</p>
+      <p className="text-xs text-grey-50 mt-1">Prijs inclusief btw</p>
     </div>
   )
 }

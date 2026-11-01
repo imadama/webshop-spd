@@ -1,41 +1,68 @@
-import { HttpTypes } from "@medusajs/types"
-import { Container } from "@modules/common/components/ui"
+"use client"
+import { useEffect, useState } from "react"
 import Image from "next/image"
+import { HttpTypes } from "@medusajs/types"
+import PlaceholderImage from "@modules/common/icons/placeholder-image"
 
-type ImageGalleryProps = {
+export default function ImageGallery({
+  images,
+  title,
+}: {
   images: HttpTypes.StoreProductImage[]
-}
-
-const ImageGallery = ({ images }: ImageGalleryProps) => {
+  title: string
+}) {
+  const [active, setActive] = useState(0)
+  useEffect(
+    () => setActive(0),
+    [images.map((image) => image.id || image.url).join(",")],
+  )
+  const index = Math.min(active, Math.max(images.length - 1, 0))
+  const image = images[index]
   return (
-    <div className="flex items-start relative">
-      <div className="flex flex-col flex-1 small:mx-16 gap-y-4">
-        {images.map((image, index) => {
-          return (
-            <Container
-              key={image.id}
-              className="relative aspect-[29/34] w-full overflow-hidden bg-ui-bg-subtle"
-              id={image.id}
-            >
-              {!!image.url && (
-                <Image
-                  src={image.url}
-                  priority={index <= 2 ? true : false}
-                  className="absolute inset-0 rounded-rounded"
-                  alt={`Product image ${index + 1}`}
-                  fill
-                  sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
-                  style={{
-                    objectFit: "cover",
-                  }}
-                />
-              )}
-            </Container>
-          )
-        })}
+    <div className="spd-gallery">
+      <div className="spd-gallery-main">
+        {image?.url ? (
+          <Image
+            src={image.url}
+            alt={`${title}${index ? ` — detail ${index + 1}` : ""}`}
+            fill
+            priority
+            sizes="(max-width:767px) 90vw, (max-width:1023px) 80vw, 650px"
+            className="object-contain"
+          />
+        ) : (
+          <div className="spd-image-placeholder">
+            <PlaceholderImage size={48} />
+            <span>Er is nog geen productfoto beschikbaar.</span>
+          </div>
+        )}
       </div>
+      {images.length > 1 && (
+        <div
+          className="spd-gallery-thumbnails"
+          role="group"
+          aria-label="Productfoto kiezen"
+        >
+          {images.map((image, i) => (
+            <button
+              type="button"
+              key={image.id || image.url}
+              onClick={() => setActive(i)}
+              aria-label={`Bekijk productfoto ${i + 1}`}
+              aria-pressed={index === i}
+              className="spd-gallery-thumbnail"
+            >
+              <Image
+                src={image.url}
+                alt=""
+                fill
+                sizes="80px"
+                className="object-contain"
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
-
-export default ImageGallery

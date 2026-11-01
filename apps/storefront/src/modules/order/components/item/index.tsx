@@ -1,3 +1,4 @@
+import { getProductLabel } from "@lib/util/catalog-presentation"
 import { HttpTypes } from "@medusajs/types"
 import { Table, Text } from "@modules/common/components/ui"
 
@@ -16,7 +17,11 @@ const Item = ({ item, currencyCode }: ItemProps) => {
     <Table.Row className="w-full" data-testid="product-row">
       <Table.Cell className="!pl-0 p-4 w-24">
         <div className="flex w-16">
-          <Thumbnail thumbnail={item.thumbnail} size="square" />
+          <Thumbnail
+            thumbnail={item.thumbnail}
+            size="square"
+            alt={item.product_title || item.title}
+          />
         </div>
       </Table.Cell>
 
@@ -25,7 +30,7 @@ const Item = ({ item, currencyCode }: ItemProps) => {
           className="txt-medium-plus text-ui-fg-base"
           data-testid="product-name"
         >
-          {item.product_title}
+          {getProductLabel(item.product_title || item.title)}
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
       </Table.Cell>

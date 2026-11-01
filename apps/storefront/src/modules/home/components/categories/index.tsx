@@ -1,51 +1,79 @@
-import { listCategories } from "@lib/data/categories"
+import Image from "next/image"
+import { ArrowRight } from "@medusajs/icons"
+import { HttpTypes } from "@medusajs/types"
+import {
+  getCategoryPresentation,
+  getProductImage,
+} from "@lib/util/catalog-presentation"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
-const categoryConfig: Record<string, { emoji: string; description: string }> = {
-  laadkabels: { emoji: "🔌", description: "Voor alle automodellen en laadsnelheden" },
-  thuisladers: { emoji: "🏠", description: "Laad je auto veilig thuis op" },
-  laadpalen: { emoji: "⚡", description: "Vaste installaties voor thuis en zakelijk" },
-  verloopkabels: { emoji: "🔄", description: "Adapters voor elk stopcontact" },
-}
-
-export default async function Categories() {
-  const categories = await listCategories()
-  const topLevel = categories.filter((c) => !c.parent_category)
-
+export default function Categories({
+  categories,
+  products,
+}: {
+  categories: HttpTypes.StoreProductCategory[]
+  products: HttpTypes.StoreProduct[]
+}) {
+  const topLevel = categories.filter(
+    (category) => !category.parent_category && category.handle,
+  )
   if (!topLevel.length) return null
 
   return (
-    <section className="bg-white border-t border-b border-spd-cream-dark">
-      <div className="content-container py-12">
-        <h2 className="font-artico text-2xl small:text-3xl text-spd-green uppercase tracking-wide mb-8 text-center">
-          Vind het juiste product voor jouw auto
-        </h2>
-        <div className="grid grid-cols-2 small:grid-cols-4 gap-4">
-          {topLevel.map((cat) => {
-            const config = categoryConfig[cat.handle ?? ""] ?? { emoji: "⚡", description: "" }
-            return (
-              <LocalizedClientLink
-                key={cat.id}
-                href={`/categories/${cat.handle}`}
-                className="group flex flex-col items-center text-center gap-3 bg-spd-cream rounded-xl p-6 hover:bg-spd-cream-dark transition-colors duration-200"
-              >
-                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-3xl shadow-sm group-hover:shadow-md transition-shadow">
-                  {config.emoji}
-                </div>
-                <div>
-                  <div className="font-semibold text-spd-green text-sm mb-1">{cat.name}</div>
-                  <div className="text-xs text-grey-50">{config.description}</div>
-                </div>
-                <span className="text-xs text-spd-green font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
-                  Bekijk producten
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </LocalizedClientLink>
-            )
-          })}
+    <section
+      id="assortiment"
+      className="spd-container spd-section"
+      aria-labelledby="category-title"
+    >
+      <div className="spd-section-heading">
+        <div>
+          <p className="spd-eyebrow">Het assortiment</p>
+          <h2 id="category-title">Wat zoek je?</h2>
         </div>
+        <LocalizedClientLink href="/store" className="spd-text-link">
+          Alle producten <ArrowRight aria-hidden="true" />
+        </LocalizedClientLink>
+      </div>
+      <div className="spd-category-grid">
+        {topLevel.map((category, index) => {
+          const { label, description } = getCategoryPresentation(category)
+          const product =
+            products.find(
+              (p) =>
+                p.categories?.some((c) => c.id === category.id) &&
+                getProductImage(p),
+            ) ?? category.products?.find((p) => getProductImage(p))
+          const image = product && getProductImage(product)
+          return (
+            <LocalizedClientLink
+              key={category.id}
+              href={`/categories/${category.handle}`}
+              className="spd-category"
+            >
+              <div className="spd-category-top">
+                <span className="spd-category-number">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <ArrowRight aria-hidden="true" />
+              </div>
+              {image && (
+                <div className="spd-category-image">
+                  <Image
+                    src={image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 767px) 120px, 170px"
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              <div className="spd-category-copy">
+                <h3>{label}</h3>
+                <p>{description}</p>
+              </div>
+            </LocalizedClientLink>
+          )
+        })}
       </div>
     </section>
   )

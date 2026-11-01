@@ -31,11 +31,11 @@ export async function generateStaticParams() {
       regions
         ?.map((r) => r.countries?.map((c) => c.iso_2))
         .flat()
-        .filter(Boolean) as string[]
+        .filter(Boolean) as string[],
   )
 
   const collectionHandles = collections.map(
-    (collection: StoreCollection) => collection.handle
+    (collection: StoreCollection) => collection.handle,
   )
 
   const staticParams = countryCodes
@@ -43,7 +43,7 @@ export async function generateStaticParams() {
       collectionHandles.map((handle: string | undefined) => ({
         countryCode,
         handle,
-      }))
+      })),
     )
     .flat()
 
@@ -59,8 +59,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   const metadata = {
-    title: `${collection.title} | Medusa Store`,
-    description: `${collection.title} collection`,
+    title: collection.title,
+    description: `Bekijk de collectie ${collection.title} bij SmartPowerDeals.`,
   } as Metadata
 
   return metadata
@@ -72,7 +72,7 @@ export default async function CollectionPage(props: Props) {
   const { sortBy, page } = searchParams
 
   const collection = await getCollectionByHandle(params.handle).then(
-    (collection) => collection
+    (collection) => collection,
   )
 
   if (!collection) {

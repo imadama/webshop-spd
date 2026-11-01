@@ -10,6 +10,8 @@ import { Fragment } from "react"
 import CountrySelect from "../country-select"
 import LanguageSelect from "../language-select"
 import { Locale } from "@lib/data/locales"
+import { getCategoryPresentation } from "@lib/util/catalog-presentation"
+import SearchField from "../search-field"
 
 const generalLinks = [
   { label: "Alle producten", href: "/store" },
@@ -33,8 +35,7 @@ const SideMenu = ({
   const countryToggleState = useToggleState()
   const languageToggleState = useToggleState()
 
-  const topLevelCategories =
-    categories?.filter((c) => !c.parent_category) ?? []
+  const topLevelCategories = categories?.filter((c) => !c.parent_category) ?? []
 
   return (
     <div className="h-full">
@@ -45,7 +46,7 @@ const SideMenu = ({
               <div className="relative flex h-full">
                 <Popover.Button
                   data-testid="nav-menu-button"
-                  className="relative h-full flex items-center gap-x-2 transition-colors ease-out duration-200 focus:outline-none text-white hover:text-spd-cream"
+                  className="relative h-full flex items-center gap-x-2 transition-colors ease-out duration-200 focus:outline-none text-grey-80 hover:text-spd-green"
                   aria-label="Menu openen"
                 >
                   <svg
@@ -86,57 +87,27 @@ const SideMenu = ({
                 <PopoverPanel className="flex flex-col fixed inset-y-0 left-0 w-[85vw] max-w-sm z-[51] text-sm">
                   <div
                     data-testid="nav-menu-popup"
-                    className="flex flex-col h-full bg-spd-green overflow-y-auto"
+                    className="flex flex-col h-full bg-white overflow-y-auto spd-menu-panel"
                   >
-                    <div className="flex items-center justify-between px-6 h-16 border-b border-spd-green-dark shrink-0">
-                      <span className="text-white font-semibold">Menu</span>
+                    <div className="flex items-center justify-between px-6 h-16 border-b border-grey-20 shrink-0">
+                      <span className="text-grey-80 font-semibold">Menu</span>
                       <button
                         data-testid="close-menu-button"
                         onClick={close}
-                        className="text-white hover:text-spd-cream transition-colors"
+                        className="text-grey-80 hover:text-spd-green transition-colors"
                         aria-label="Menu sluiten"
                       >
                         <XMark />
                       </button>
                     </div>
 
-                    <div className="px-6 py-5 border-b border-spd-green-dark">
-                      <form action="/store" method="get">
-                        <div className="relative w-full">
-                          <input
-                            type="search"
-                            name="q"
-                            placeholder="Zoek naar producten..."
-                            aria-label="Zoek naar producten"
-                            className="w-full h-10 pl-4 pr-10 rounded-full text-sm text-grey-80 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-spd-cream"
-                          />
-                          <button
-                            type="submit"
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-spd-green"
-                            aria-label="Zoeken"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </form>
+                    <div className="px-6 py-5 border-b border-grey-20">
+                      <SearchField />
                     </div>
 
                     {topLevelCategories.length > 0 && (
-                      <div className="px-6 py-5 border-b border-spd-green-dark">
-                        <span className="text-spd-cream text-xs font-semibold uppercase tracking-wide">
+                      <div className="px-6 py-5 border-b border-grey-20">
+                        <span className="text-grey-50 text-xs font-semibold uppercase tracking-wide">
                           Categorieën
                         </span>
                         <ul className="flex flex-col mt-3">
@@ -144,11 +115,11 @@ const SideMenu = ({
                             <li key={category.id}>
                               <LocalizedClientLink
                                 href={`/categories/${category.handle}`}
-                                className="block py-2 text-lg text-white hover:text-spd-cream transition-colors"
+                                className="block py-2 text-lg text-grey-80 hover:text-spd-green transition-colors"
                                 onClick={close}
                                 data-testid="category-link"
                               >
-                                {category.name}
+                                {getCategoryPresentation(category).label}
                               </LocalizedClientLink>
                             </li>
                           ))}
@@ -162,7 +133,7 @@ const SideMenu = ({
                           <li key={link.href}>
                             <LocalizedClientLink
                               href={link.href}
-                              className="block py-2 text-lg text-white hover:text-spd-cream transition-colors"
+                              className="block py-2 text-lg text-grey-80 hover:text-spd-green transition-colors"
                               onClick={close}
                             >
                               {link.label}
@@ -172,7 +143,7 @@ const SideMenu = ({
                       </ul>
                     </div>
 
-                    <div className="mt-auto flex flex-col gap-y-4 px-6 py-6 border-t border-spd-green-dark text-white">
+                    <div className="mt-auto flex flex-col gap-y-4 px-6 py-6 border-t border-grey-20 text-grey-80">
                       {!!locales?.length && (
                         <div
                           className="flex justify-between"
@@ -187,7 +158,7 @@ const SideMenu = ({
                           <ArrowRightMini
                             className={clx(
                               "transition-transform duration-150",
-                              languageToggleState.state ? "-rotate-90" : ""
+                              languageToggleState.state ? "-rotate-90" : "",
                             )}
                           />
                         </div>
@@ -206,11 +177,11 @@ const SideMenu = ({
                         <ArrowRightMini
                           className={clx(
                             "transition-transform duration-150",
-                            countryToggleState.state ? "-rotate-90" : ""
+                            countryToggleState.state ? "-rotate-90" : "",
                           )}
                         />
                       </div>
-                      <Text className="txt-compact-small text-white/50">
+                      <Text className="txt-compact-small text-grey-50">
                         © {new Date().getFullYear()} SmartPowerDeals
                       </Text>
                     </div>

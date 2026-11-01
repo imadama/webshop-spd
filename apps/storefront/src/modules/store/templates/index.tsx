@@ -1,12 +1,10 @@
 import { Suspense } from "react"
-
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
-import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-
 import PaginatedProducts from "./paginated-products"
+import CatalogLayout from "./catalog-layout"
 
-const StoreTemplate = ({
+export default function StoreTemplate({
   sortBy,
   page,
   q,
@@ -16,37 +14,32 @@ const StoreTemplate = ({
   page?: string
   q?: string
   countryCode: string
-}) => {
-  const pageNumber = page ? parseInt(page) : 1
+}) {
+  const pageNumber = Math.max(1, Number.parseInt(page || "1") || 1)
   const sort = sortBy || "created_at"
   const query = q?.trim() || undefined
-
   return (
-    <div
-      className="flex flex-col small:flex-row small:items-start py-6 content-container"
-      data-testid="category-container"
+    <CatalogLayout
+      title={query ? `Zoekresultaten voor “${query}”` : "Alle producten"}
+      description={
+        query
+          ? "Bekijk de producten die passen bij je zoekopdracht."
+          : "Laadkabels, mobiele laders, laadpunten en energie voor thuis. Ontdek het assortiment en vergelijk de mogelijkheden."
+      }
+      sortBy={sort}
+      titleTestId="store-page-title"
     >
-      <RefinementList sortBy={sort} />
-      <div className="w-full">
-        <div className="mb-8 text-2xl-semi">
-          <h1 data-testid="store-page-title">
-            {query ? `Zoekresultaten voor “${query}”` : "Alle producten"}
-          </h1>
-        </div>
-        <Suspense
-          key={`${query ?? ""}-${sort}-${pageNumber}`}
-          fallback={<SkeletonProductGrid />}
-        >
-          <PaginatedProducts
-            sortBy={sort}
-            page={pageNumber}
-            q={query}
-            countryCode={countryCode}
-          />
-        </Suspense>
-      </div>
-    </div>
+      <Suspense
+        key={`${query ?? ""}-${sort}-${pageNumber}`}
+        fallback={<SkeletonProductGrid />}
+      >
+        <PaginatedProducts
+          sortBy={sort}
+          page={pageNumber}
+          q={query}
+          countryCode={countryCode}
+        />
+      </Suspense>
+    </CatalogLayout>
   )
 }
-
-export default StoreTemplate

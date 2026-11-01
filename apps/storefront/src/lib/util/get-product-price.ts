@@ -14,7 +14,7 @@ type VariantWithPrice = HttpTypes.StoreProductVariant & {
 }
 
 export const getPricesForVariant = (variant: VariantWithPrice) => {
-  if (!variant?.calculated_price?.calculated_amount) {
+  if (variant?.calculated_price?.calculated_amount == null) {
     return null
   }
 
@@ -33,7 +33,7 @@ export const getPricesForVariant = (variant: VariantWithPrice) => {
     price_type: variant.calculated_price.calculated_price.price_list_type,
     percentage_diff: getPercentageDiff(
       variant.calculated_price.original_amount,
-      variant.calculated_price.calculated_amount
+      variant.calculated_price.calculated_amount,
     ),
   }
 }
@@ -72,7 +72,7 @@ export function getProductPrice({
     }
 
     const variant = product.variants?.find(
-      (v) => v.id === variantId || v.sku === variantId
+      (v) => v.id === variantId || v.sku === variantId,
     ) as VariantWithPrice | undefined
 
     if (!variant) {

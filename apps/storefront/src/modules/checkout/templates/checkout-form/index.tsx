@@ -17,15 +17,25 @@ export default async function CheckoutForm({
     return null
   }
 
-  const shippingMethods = await listCartShippingMethods(cart.id)
-  const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? "")
+  const [shippingMethods, paymentMethods] = await Promise.all([
+    listCartShippingMethods(cart.id),
+    listCartPaymentMethods(cart.region?.id ?? ""),
+  ])
 
   if (!shippingMethods || !paymentMethods) {
-    return null
+    return (
+      <div className="spd-checkout-step" role="alert">
+        <h2>Afrekenen kon niet laden.</h2>
+        <p>
+          Ververs de pagina om het opnieuw te proberen. Je kunt ons ook mailen
+          via info@smartpowerdeals.nl.
+        </p>
+      </div>
+    )
   }
 
   return (
-    <div className="w-full grid grid-cols-1 gap-y-8">
+    <div className="spd-checkout-form">
       <Addresses cart={cart} customer={customer} />
 
       <Shipping cart={cart} availableShippingMethods={shippingMethods} />

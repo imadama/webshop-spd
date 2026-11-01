@@ -4,7 +4,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Betaling verwerken — SmartPowerDeals",
+  title: "Betaling verwerken",
 }
 
 // Called after Mollie redirects the user back to the store.
@@ -28,7 +28,10 @@ export default async function MollieReturnPage() {
         Je betaling wordt bevestigd. Je ontvangt een bevestigingsmail zodra de
         betaling is verwerkt. Controleer je bestellingen via je account.
       </Text>
-      <LocalizedClientLink href="/account/orders" className="text-ui-fg-interactive hover:underline">
+      <LocalizedClientLink
+        href="/account/orders"
+        className="text-ui-fg-interactive hover:underline"
+      >
         Mijn bestellingen bekijken
       </LocalizedClientLink>
     </div>

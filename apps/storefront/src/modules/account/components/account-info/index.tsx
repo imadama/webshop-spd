@@ -13,7 +13,7 @@ type AccountInfoProps = {
   errorMessage?: string
   clearState: () => void
   children?: React.ReactNode
-  'data-testid'?: string
+  "data-testid"?: string
 }
 
 const AccountInfo = ({
@@ -22,9 +22,9 @@ const AccountInfo = ({
   isSuccess,
   isError,
   clearState,
-  errorMessage = "An error occurred, please try again",
+  errorMessage = "Er ging iets mis. Probeer het opnieuw.",
   children,
-  'data-testid': dataTestid
+  "data-testid": dataTestid,
 }: AccountInfoProps) => {
   const { state, close, toggle } = useToggleState()
 
@@ -48,7 +48,9 @@ const AccountInfo = ({
           <span className="uppercase text-ui-fg-base">{label}</span>
           <div className="flex items-center flex-1 basis-0 justify-end gap-x-4">
             {typeof currentInfo === "string" ? (
-              <span className="font-semibold" data-testid="current-info">{currentInfo}</span>
+              <span className="font-semibold" data-testid="current-info">
+                {currentInfo}
+              </span>
             ) : (
               currentInfo
             )}
@@ -63,7 +65,7 @@ const AccountInfo = ({
             data-testid="edit-button"
             data-active={state}
           >
-            {state ? "Cancel" : "Edit"}
+            {state ? "Annuleren" : "Wijzigen"}
           </Button>
         </div>
       </div>
@@ -72,17 +74,18 @@ const AccountInfo = ({
       <Disclosure>
         <Disclosure.Panel
           static
+          hidden={!isSuccess}
           className={clx(
             "transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden",
             {
               "max-h-[1000px] opacity-100": isSuccess,
               "max-h-0 opacity-0": !isSuccess,
-            }
+            },
           )}
           data-testid="success-message"
         >
           <Badge className="p-2 my-4" color="green">
-            <span>{label} updated succesfully</span>
+            <span>{label} is bijgewerkt</span>
           </Badge>
         </Disclosure.Panel>
       </Disclosure>
@@ -91,12 +94,13 @@ const AccountInfo = ({
       <Disclosure>
         <Disclosure.Panel
           static
+          hidden={!isError}
           className={clx(
             "transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden",
             {
               "max-h-[1000px] opacity-100": isError,
               "max-h-0 opacity-0": !isError,
-            }
+            },
           )}
           data-testid="error-message"
         >
@@ -109,12 +113,13 @@ const AccountInfo = ({
       <Disclosure>
         <Disclosure.Panel
           static
+          hidden={!state}
           className={clx(
             "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
             {
               "max-h-[1000px] opacity-100": state,
               "max-h-0 opacity-0": !state,
-            }
+            },
           )}
         >
           <div className="flex flex-col gap-y-2 py-4">
@@ -126,7 +131,7 @@ const AccountInfo = ({
                 type="submit"
                 data-testid="save-button"
               >
-                Save changes
+                Wijzigingen opslaan
               </Button>
             </div>
           </div>

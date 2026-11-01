@@ -1,48 +1,28 @@
 "use client"
-
-import FilterRadioGroup from "@modules/common/components/filter-radio-group"
-
 export type SortOptions = "price_asc" | "price_desc" | "created_at"
-
-type SortProductsProps = {
+export default function SortProducts({
+  sortBy,
+  setQueryParams,
+  "data-testid": testId,
+}: {
   sortBy: SortOptions
   setQueryParams: (name: string, value: SortOptions) => void
   "data-testid"?: string
-}
-
-const sortOptions = [
-  {
-    value: "created_at",
-    label: "Latest Arrivals",
-  },
-  {
-    value: "price_asc",
-    label: "Price: Low -> High",
-  },
-  {
-    value: "price_desc",
-    label: "Price: High -> Low",
-  },
-]
-
-const SortProducts = ({
-  "data-testid": dataTestId,
-  sortBy,
-  setQueryParams,
-}: SortProductsProps) => {
-  const handleChange = (value: string) => {
-    setQueryParams("sortBy", value as SortOptions)
-  }
-
+}) {
   return (
-    <FilterRadioGroup
-      title="Sort by"
-      items={sortOptions}
-      value={sortBy}
-      handleChange={handleChange}
-      data-testid={dataTestId}
-    />
+    <label className="spd-sort">
+      <span>Sorteer op</span>
+      <select
+        value={sortBy}
+        onChange={(event) =>
+          setQueryParams("sortBy", event.target.value as SortOptions)
+        }
+        data-testid={testId || "sort-products"}
+      >
+        <option value="created_at">Nieuwste producten</option>
+        <option value="price_asc">Prijs: laag naar hoog</option>
+        <option value="price_desc">Prijs: hoog naar laag</option>
+      </select>
+    </label>
   )
 }
-
-export default SortProducts

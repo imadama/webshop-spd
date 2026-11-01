@@ -1,66 +1,42 @@
 import { listProducts } from "@lib/data/products"
-import { getRegion } from "@lib/data/regions"
 import { HttpTypes } from "@medusajs/types"
-import Product from "../product-preview"
-
-type RelatedProductsProps = {
-  product: HttpTypes.StoreProduct
-  countryCode: string
-}
+import ProductCard from "../product-preview/card"
 
 export default async function RelatedProducts({
   product,
   countryCode,
-}: RelatedProductsProps) {
-  const region = await getRegion(countryCode)
-
-  if (!region) {
-    return null
-  }
-
-  // edit this function to define your related products logic
-  const queryParams: HttpTypes.StoreProductListParams = {}
-  if (region?.id) {
-    queryParams.region_id = region.id
-  }
-  if (product.collection_id) {
-    queryParams.collection_id = [product.collection_id]
-  }
-  if (product.tags) {
-    queryParams.tag_id = product.tags
-      .map((t) => t.id)
-      .filter(Boolean) as string[]
-  }
-  queryParams.is_giftcard = false
-
-  const products = await listProducts({
-    queryParams,
+}: {
+  product: HttpTypes.StoreProduct
+  countryCode: string
+}) {
+  const category = product.categories?.[0]
+  if (!category && !product.collection_id) return null
+  const { response } = await listProducts({
     countryCode,
-  }).then(({ response }) => {
-    return response.products.filter(
-      (responseProduct) => responseProduct.id !== product.id
-    )
+    queryParams: {
+      limit: 5,
+      ...(category
+        ? { category_id: [category.id] }
+        : { collection_id: [product.collection_id!] }),
+    },
   })
-
-  if (!products.length) {
-    return null
-  }
-
+  const products = response.products
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4)
+  if (!products.length) return null
   return (
-    <div className="product-page-constraint">
-      <div className="flex flex-col items-center text-center mb-10">
-        <h2 className="font-artico text-2xl small:text-3xl text-spd-green uppercase tracking-wide">
-          Gerelateerde producten
-        </h2>
+    <section>
+      <div className="spd-section-heading">
+        <div>
+          <p className="spd-eyebrow">Vergelijk de mogelijkheden</p>
+          <h2>Ook in deze categorie</h2>
+        </div>
       </div>
-
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
-        {products.map((product) => (
-          <li key={product.id}>
-            <Product region={region} product={product} />
-          </li>
+      <div className="spd-product-grid">
+        {products.map((p) => (
+          <ProductCard key={p.id} product={p} />
         ))}
-      </ul>
-    </div>
+      </div>
+    </section>
   )
 }

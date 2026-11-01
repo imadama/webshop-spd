@@ -1,62 +1,100 @@
+import Image from "next/image"
+import { ArrowRight } from "@medusajs/icons"
+import { HttpTypes } from "@medusajs/types"
+import {
+  getProductImage,
+  getProductLabel,
+} from "@lib/util/catalog-presentation"
+import { getProductPrice } from "@lib/util/get-product-price"
+import { convertToLocale } from "@lib/util/money"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
-const HeroBanner = ({
-  title,
-  subtitle,
-  cta,
-  href,
-  bg,
-  emoji,
+export default function Hero({
+  products,
 }: {
-  title: string
-  subtitle: string
-  cta: string
-  href: string
-  bg: string
-  emoji: string
-}) => (
-  <LocalizedClientLink href={href} className="group flex-1 min-h-[280px] small:min-h-[340px]">
-    <div className={`relative h-full rounded-xl overflow-hidden ${bg} flex flex-col justify-end p-8 shadow-sm hover:shadow-md transition-shadow`}>
-      <div className="absolute top-6 right-8 text-7xl opacity-20 select-none">{emoji}</div>
-      <div className="relative z-10">
-        <h2 className="font-artico text-3xl small:text-4xl text-white uppercase tracking-wide leading-tight mb-2">
-          {title}
-        </h2>
-        <p className="text-white/80 text-sm mb-5 max-w-xs">{subtitle}</p>
-        <span className="inline-flex items-center gap-2 bg-white text-spd-green font-semibold text-sm px-5 py-2.5 rounded-full group-hover:bg-spd-cream transition-colors">
-          {cta}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </span>
-      </div>
-    </div>
-  </LocalizedClientLink>
-)
+  products: HttpTypes.StoreProduct[]
+}) {
+  const featured =
+    products.find((p) => p.handle === "zc-e-mini" && getProductImage(p)) ??
+    products.find((p) => p.handle && getProductImage(p))
+  const image = featured && getProductImage(featured)
+  const price = featured && getProductPrice({ product: featured }).cheapestPrice
 
-const Hero = () => {
   return (
-    <section className="content-container py-6">
-      <div className="flex flex-col small:flex-row gap-4">
-        <HeroBanner
-          title="Laad slim, laad groen"
-          subtitle="Vind de perfecte laadkabel of thuislader voor jouw elektrische auto."
-          cta="Bekijk laadkabels"
-          href="/categories/laadkabels"
-          bg="bg-spd-green"
-          emoji="🔌"
-        />
-        <HeroBanner
-          title="Thuisladers op maat"
-          subtitle="Laad je EV veilig en snel op bij jou thuis — dag en nacht."
-          cta="Bekijk thuisladers"
-          href="/categories/thuisladers"
-          bg="bg-spd-green-dark"
-          emoji="🏠"
-        />
+    <section className="spd-hero" aria-labelledby="home-title">
+      <div className="spd-container spd-hero-grid">
+        <div className="spd-hero-copy">
+          <p className="spd-eyebrow">Laden & energie</p>
+          <h1 id="home-title">
+            De juiste kabel.
+            <br />
+            <span>De juiste lader.</span>
+          </h1>
+          <p className="spd-hero-description">
+            Laadkabels, mobiele laders en laadpunten voor thuis en onderweg.
+            Vind wat past bij jouw situatie.
+          </p>
+          <div className="spd-hero-actions">
+            <a href="#assortiment" className="spd-button">
+              Ontdek het assortiment <ArrowRight aria-hidden="true" />
+            </a>
+            <a href="#keuzehulp" className="spd-text-link">
+              Hulp bij kiezen <ArrowRight aria-hidden="true" />
+            </a>
+          </div>
+          <div className="spd-hero-note">
+            <span aria-hidden="true" />
+            Van losse laadkabel tot een laadpunt bij huis
+          </div>
+        </div>
+        {featured && image ? (
+          <LocalizedClientLink
+            href={`/products/${featured.handle}`}
+            className="spd-hero-product"
+          >
+            <span className="spd-product-tag">Uit ons assortiment</span>
+            <div className="spd-hero-product-image">
+              <Image
+                src={image}
+                alt={getProductLabel(featured.title)}
+                fill
+                priority
+                sizes="(max-width: 767px) 85vw, 520px"
+                className="object-contain"
+              />
+            </div>
+            <div className="spd-hero-product-caption">
+              <div>
+                <span>Ontdek dit product</span>
+                <h2>{getProductLabel(featured.title)}</h2>
+              </div>
+              <div className="spd-hero-product-price">
+                {price &&
+                  convertToLocale({
+                    amount: price.calculated_price_number,
+                    currency_code: price.currency_code,
+                    locale: "nl-NL",
+                  })}
+                <ArrowRight aria-hidden="true" />
+              </div>
+            </div>
+          </LocalizedClientLink>
+        ) : (
+          <div className="spd-hero-directory">
+            <p className="spd-eyebrow">Waar wil je laden?</p>
+            <h2>
+              Thuis.
+              <br />
+              Onderweg.
+              <br />
+              Op jouw manier.
+            </h2>
+            <LocalizedClientLink href="/store" className="spd-text-link">
+              Bekijk alle producten <ArrowRight aria-hidden="true" />
+            </LocalizedClientLink>
+          </div>
+        )}
       </div>
     </section>
   )
 }
-
-export default Hero

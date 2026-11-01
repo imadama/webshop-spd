@@ -5,13 +5,16 @@ import Categories from "@modules/home/components/categories"
 import ProductsPreview from "@modules/home/components/products-preview"
 import UspBar from "@modules/home/components/usp-bar"
 import Faq from "@modules/home/components/faq"
+import { listProducts } from "@lib/data/products"
+import { listCategories } from "@lib/data/categories"
+import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
   title: {
-    absolute: "SmartPowerDeals — slimme deals voor smart living",
+    absolute: "Laadkabels, mobiele laders & laadpunten — SmartPowerDeals",
   },
   description:
-    "SmartPowerDeals — slimme deals voor smart living. Bestel online, betaal met iDEAL, geleverd in heel NL en BE.",
+    "Bekijk laadkabels, mobiele laders, laadpunten en thuisbatterijen bij SmartPowerDeals. Vergelijk het assortiment en krijg hulp bij het kiezen.",
 }
 
 export default async function Home(props: {
@@ -19,14 +22,29 @@ export default async function Home(props: {
 }) {
   const params = await props.params
   const { countryCode } = params
+  const [categories, region] = await Promise.all([
+    listCategories(),
+    getRegion(countryCode),
+  ])
+  const products = region
+    ? (
+        await listProducts({
+          regionId: region.id,
+          queryParams: {
+            limit: 100,
+            fields: "*variants.calculated_price,*images,*categories",
+          },
+        })
+      ).response.products
+    : []
 
   return (
-    <>
-      <Hero />
-      <Categories />
-      <ProductsPreview countryCode={countryCode} />
+    <div className="spd-home">
+      <Hero products={products} />
+      <Categories categories={categories} products={products} />
+      <ProductsPreview products={products} />
       <UspBar />
       <Faq />
-    </>
+    </div>
   )
 }

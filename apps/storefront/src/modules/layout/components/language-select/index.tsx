@@ -49,7 +49,7 @@ type LanguageSelectProps = {
 const getLocalizedLanguageName = (
   code: string,
   fallbackName: string,
-  displayLocale: string = "en-US"
+  displayLocale: string = "en-US",
 ): string => {
   try {
     const displayNames = new Intl.DisplayNames([displayLocale], {
@@ -63,8 +63,8 @@ const getLocalizedLanguageName = (
 
 const DEFAULT_OPTION: LanguageOption = {
   code: "",
-  name: "Default",
-  localizedName: "Default",
+  name: "Standaard",
+  localizedName: "Standaard",
   countryCode: "",
 }
 
@@ -86,7 +86,7 @@ const LanguageSelect = ({
       localizedName: getLocalizedLanguageName(
         locale.code,
         locale.name,
-        currentLocale ?? "en-US"
+        currentLocale ?? "en-US",
       ),
       countryCode: getCountryCodeFromLocale(locale.code),
     }))
@@ -96,7 +96,7 @@ const LanguageSelect = ({
   useEffect(() => {
     if (currentLocale) {
       const option = options.find(
-        (o) => o.code.toLowerCase() === currentLocale.toLowerCase()
+        (o) => o.code.toLowerCase() === currentLocale.toLowerCase(),
       )
       setCurrent(option ?? DEFAULT_OPTION)
     } else {
@@ -119,16 +119,16 @@ const LanguageSelect = ({
         onChange={handleChange}
         defaultValue={
           currentLocale
-            ? options.find(
-                (o) => o.code.toLowerCase() === currentLocale.toLowerCase()
-              ) ?? DEFAULT_OPTION
+            ? (options.find(
+                (o) => o.code.toLowerCase() === currentLocale.toLowerCase(),
+              ) ?? DEFAULT_OPTION)
             : DEFAULT_OPTION
         }
         disabled={isPending}
       >
         <ListboxButton className="py-1 w-full">
           <div className="txt-compact-small flex items-start gap-x-2">
-            <span>Language:</span>
+            <span>Taal:</span>
             {current && (
               <span className="txt-compact-small flex items-center gap-x-2">
                 {current.countryCode && (

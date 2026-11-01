@@ -1,25 +1,16 @@
-import { Heading } from "@modules/common/components/ui"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import React from "react"
-
-const Help = () => {
+import { ArrowRight } from "@medusajs/icons"
+export default function Help() {
   return (
-    <div className="mt-6">
-      <Heading className="text-base-semi">Need help?</Heading>
-      <div className="text-base-regular my-2">
-        <ul className="gap-y-2 flex flex-col">
-          <li>
-            <LocalizedClientLink href="/contact">Contact</LocalizedClientLink>
-          </li>
-          <li>
-            <LocalizedClientLink href="/contact">
-              Returns & Exchanges
-            </LocalizedClientLink>
-          </li>
-        </ul>
+    <aside className="spd-order-help">
+      <div>
+        <h2>Een vraag over je bestelling?</h2>
+        <p>
+          Vermeld je bestelnummer als je ons mailt. We helpen je graag verder.
+        </p>
       </div>
-    </div>
+      <a href="mailto:info@smartpowerdeals.nl">
+        info@smartpowerdeals.nl <ArrowRight aria-hidden="true" />
+      </a>
+    </aside>
   )
 }
-
-export default Help

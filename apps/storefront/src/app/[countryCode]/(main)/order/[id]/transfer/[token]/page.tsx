@@ -1,34 +1,32 @@
 import { Heading, Text } from "@modules/common/components/ui"
 import TransferActions from "@modules/order/components/transfer-actions"
-import TransferImage from "@modules/order/components/transfer-image"
 
 export default async function TransferPage({
   params,
 }: {
-  params: { id: string; token: string }
+  params: Promise<{ id: string; token: string }>
 }) {
-  const { id, token } = params
+  const { id, token } = await params
 
   return (
-    <div className="flex flex-col gap-y-4 items-start w-2/5 mx-auto mt-10 mb-20">
-      <TransferImage />
-      <div className="flex flex-col gap-y-6">
+    <div className="spd-transfer-page spd-page spd-container">
+      <div className="spd-order-panel flex flex-col gap-y-6">
         <Heading level="h1" className="text-xl text-zinc-900">
-          Transfer request for order {id}
+          Bestelling overdragen
         </Heading>
         <Text className="text-zinc-600">
-          You&#39;ve received a request to transfer ownership of your order ({id}).
-          If you agree to this request, you can approve the transfer by clicking
-          the button below.
+          Je hebt een verzoek ontvangen om bestelling {id} aan een ander account
+          over te dragen. Met de knoppen hieronder kun je het verzoek accepteren
+          of weigeren.
         </Text>
         <div className="w-full h-px bg-zinc-200" />
         <Text className="text-zinc-600">
-          If you accept, the new owner will take over all responsibilities and
-          permissions associated with this order.
+          Als je accepteert, krijgt de nieuwe eigenaar de rechten en
+          verantwoordelijkheden die bij deze bestelling horen.
         </Text>
         <Text className="text-zinc-600">
-          If you do not recognize this request or wish to retain ownership, no
-          further action is required.
+          Herken je dit verzoek niet of wil je de bestelling zelf behouden? Dan
+          hoef je niets te doen.
         </Text>
         <div className="w-full h-px bg-zinc-200" />
         <TransferActions id={id} token={token} />

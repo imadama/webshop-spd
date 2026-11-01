@@ -1,43 +1,39 @@
-import React from "react"
-
-import UnderlineLink from "@modules/common/components/interactive-link"
-
-import AccountNav from "../components/account-nav"
+import { ReactNode } from "react"
 import { HttpTypes } from "@medusajs/types"
-
-interface AccountLayoutProps {
-  customer: HttpTypes.StoreCustomer | null
-  children: React.ReactNode
-}
-
-const AccountLayout: React.FC<AccountLayoutProps> = ({
+import AccountNav from "../components/account-nav"
+import Breadcrumbs from "@modules/common/components/breadcrumbs"
+export default function AccountLayout({
   customer,
   children,
-}) => {
+}: {
+  customer: HttpTypes.StoreCustomer | null
+  children: ReactNode
+}) {
   return (
-    <div className="flex-1 small:py-12" data-testid="account-page">
-      <div className="flex-1 content-container h-full max-w-5xl mx-auto bg-white flex flex-col">
-        <div className="grid grid-cols-1  small:grid-cols-[240px_1fr] py-12">
-          <div>{customer && <AccountNav customer={customer} />}</div>
-          <div className="flex-1">{children}</div>
+    <div
+      className="spd-account-page spd-page spd-container"
+      data-testid="account-page"
+    >
+      <Breadcrumbs items={[{ label: "Mijn account" }]} />
+      {customer ? (
+        <div className="spd-account-layout">
+          <AccountNav customer={customer} />
+          <div className="spd-account-content">{children}</div>
         </div>
-        <div className="flex flex-col small:flex-row items-end justify-between small:border-t border-gray-200 py-12 gap-8">
-          <div>
-            <h3 className="text-xl-semi mb-4">Got questions?</h3>
-            <span className="txt-medium">
-              You can find frequently asked questions and answers on our
-              customer service page.
-            </span>
-          </div>
-          <div>
-            <UnderlineLink href="/customer-service">
-              Customer Service
-            </UnderlineLink>
-          </div>
+      ) : (
+        children
+      )}
+      <div className="spd-account-help">
+        <div>
+          <h2>Kunnen we je ergens mee helpen?</h2>
+          <p>
+            Mail ons je vraag over een product, je account of je bestelling.
+          </p>
         </div>
+        <a className="spd-text-link" href="mailto:info@smartpowerdeals.nl">
+          info@smartpowerdeals.nl
+        </a>
       </div>
     </div>
   )
 }
-
-export default AccountLayout

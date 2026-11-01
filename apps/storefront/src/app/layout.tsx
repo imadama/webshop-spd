@@ -1,6 +1,7 @@
 import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
 import "styles/globals.css"
+import "styles/storefront.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -8,7 +9,8 @@ export const metadata: Metadata = {
     default: "SmartPowerDeals",
     template: "%s — SmartPowerDeals",
   },
-  description: "SmartPowerDeals — slimme deals voor smart living.",
+  description:
+    "Laadkabels, mobiele laders, laadpunten en energie voor thuis. Ontdek het assortiment van SmartPowerDeals.",
   openGraph: {
     siteName: "SmartPowerDeals",
     type: "website",
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="nl" data-mode="light">
-      <body className="bg-spd-cream">
+      <body className="spd-app">
         <main className="relative">{props.children}</main>
       </body>
     </html>

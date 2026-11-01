@@ -19,13 +19,13 @@ type NativeSelectProps = {
 } & Omit<SelectHTMLAttributes<HTMLSelectElement>, "size">
 
 const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
-  ({ placeholder = "Select...", className, children, ...props }, ref) => {
+  ({ placeholder = "Maak een keuze", className, children, ...props }, ref) => {
     const innerRef = useRef<HTMLSelectElement>(null)
     const [isPlaceholder, setIsPlaceholder] = useState(false)
 
     useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
       ref,
-      () => innerRef.current
+      () => innerRef.current,
     )
 
     useEffect(() => {
@@ -46,7 +46,7 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             className,
             {
               "text-ui-fg-subtle": isPlaceholder,
-            }
+            },
           )}
         >
           <select
@@ -65,7 +65,7 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
         </IconBadge>
       </div>
     )
-  }
+  },
 )
 
 CartItemSelect.displayName = "CartItemSelect"

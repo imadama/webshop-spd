@@ -27,7 +27,7 @@ const Payment = ({
   availablePaymentMethods: { id: string }[]
 }) => {
   const activeSession = cart.payment_collection?.payment_sessions?.find(
-    (paymentSession) => paymentSession.status === "pending"
+    (paymentSession) => paymentSession.status === "pending",
   )
 
   const [isLoading, setIsLoading] = useState(false)
@@ -35,7 +35,7 @@ const Payment = ({
   const [cardBrand, setCardBrand] = useState<string | null>(null)
   const [cardComplete, setCardComplete] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    activeSession?.provider_id ?? ""
+    activeSession?.provider_id ?? "",
   )
 
   const searchParams = useSearchParams()
@@ -55,11 +55,15 @@ const Payment = ({
   }
 
   const paidByGiftcard = !!(
-    (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0
+    (cart as unknown as Record<string, unknown>)?.gift_cards &&
+    ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])
+      ?.length > 0 &&
+    cart?.total === 0
   )
 
   const paymentReady =
-    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0) || paidByGiftcard
+    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0) ||
+    paidByGiftcard
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -68,7 +72,7 @@ const Payment = ({
 
       return params.toString()
     },
-    [searchParams]
+    [searchParams],
   )
 
   const handleEdit = () => {
@@ -97,7 +101,7 @@ const Payment = ({
           pathname + "?" + createQueryString("step", "review"),
           {
             scroll: false,
-          }
+          },
         )
       }
     } catch (err) {
@@ -112,7 +116,7 @@ const Payment = ({
   }, [isOpen])
 
   return (
-    <div className="bg-white">
+    <div className="spd-checkout-step">
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
@@ -121,10 +125,10 @@ const Payment = ({
             {
               "opacity-50 pointer-events-none select-none":
                 !isOpen && !paymentReady,
-            }
+            },
           )}
         >
-          Payment
+          Betaling
           {!isOpen && paymentReady && <CheckCircleSolid />}
         </Heading>
         {!isOpen && paymentReady && (
@@ -134,7 +138,7 @@ const Payment = ({
               className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="edit-payment-button"
             >
-              Edit
+              Wijzigen
             </button>
           </Text>
         )}
@@ -174,13 +178,13 @@ const Payment = ({
           {paidByGiftcard && (
             <div className="flex flex-col w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
+                Betaalmethode
               </Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                Cadeaubon
               </Text>
             </div>
           )}
@@ -202,8 +206,8 @@ const Payment = ({
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeLike(selectedPaymentMethod)
-              ? " Enter card details"
-              : "Continue to review"}
+              ? "Vul je kaartgegevens in"
+              : "Controleer je bestelling"}
           </Button>
         </div>
 
@@ -212,7 +216,7 @@ const Payment = ({
             <div className="flex items-start gap-x-1 w-full">
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  Payment method
+                  Betaalmethode
                 </Text>
                 <Text
                   className="txt-medium text-ui-fg-subtle"
@@ -224,7 +228,7 @@ const Payment = ({
               </div>
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  Payment details
+                  Betaalgegevens
                 </Text>
                 <div
                   className="flex gap-2 txt-medium text-ui-fg-subtle items-center"
@@ -238,7 +242,7 @@ const Payment = ({
                   <Text>
                     {isStripeLike(selectedPaymentMethod) && cardBrand
                       ? cardBrand
-                      : "Another step will appear"}
+                      : "De betaling rond je af in de volgende stap."}
                   </Text>
                 </div>
               </div>
@@ -246,13 +250,13 @@ const Payment = ({
           ) : paidByGiftcard ? (
             <div className="flex flex-col w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
+                Betaalmethode
               </Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                Cadeaubon
               </Text>
             </div>
           ) : null}

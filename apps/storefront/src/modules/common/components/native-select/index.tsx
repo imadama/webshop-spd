@@ -17,15 +17,21 @@ export type NativeSelectProps = {
 
 const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
   (
-    { placeholder = "Select...", defaultValue, className, children, ...props },
-    ref
+    {
+      placeholder = "Maak een keuze",
+      defaultValue,
+      className,
+      children,
+      ...props
+    },
+    ref,
   ) => {
     const innerRef = useRef<HTMLSelectElement>(null)
     const [isPlaceholder, setIsPlaceholder] = useState(false)
 
     useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
       ref,
-      () => innerRef.current
+      () => innerRef.current,
     )
 
     useEffect(() => {
@@ -42,16 +48,16 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
           onFocus={() => innerRef.current?.focus()}
           onBlur={() => innerRef.current?.blur()}
           className={clx(
-            "relative flex items-center text-base-regular border border-ui-border-base bg-ui-bg-subtle rounded-md hover:bg-ui-bg-field-hover",
+            "spd-native-select relative flex items-center text-base-regular border border-ui-border-base bg-ui-bg-subtle rounded-md hover:bg-ui-bg-field-hover",
             className,
             {
               "text-ui-fg-muted": isPlaceholder,
-            }
+            },
           )}
         >
           <select
             ref={innerRef}
-            defaultValue={defaultValue}
+            defaultValue={defaultValue ?? ""}
             {...props}
             className="appearance-none flex-1 bg-transparent border-none px-4 py-2.5 transition-colors duration-150 outline-none "
           >
@@ -66,7 +72,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
         </div>
       </div>
     )
-  }
+  },
 )
 
 NativeSelect.displayName = "NativeSelect"

@@ -55,9 +55,12 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   return (
     <>
       <div
-        className={clx("lg:hidden inset-x-0 bottom-0 fixed z-50", {
-          "pointer-events-none": !show,
-        })}
+        className={clx(
+          "small:hidden inset-x-0 bottom-0 fixed z-50 spd-mobile-product-bar",
+          {
+            "pointer-events-none": !show,
+          },
+        )}
       >
         <Transition
           as={Fragment}
@@ -98,31 +101,41 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 <div></div>
               )}
             </div>
-            <div className={clx("grid grid-cols-2 w-full gap-x-4", {
-              "!grid-cols-1": isSimple
-            })}>
-              {!isSimple && <Button
-                onClick={open}
-                variant="secondary"
-                className="w-full"
-                data-testid="mobile-actions-button"
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span>
-                    {variant
-                      ? Object.values(options).join(" / ")
-                      : "Select Options"}
-                  </span>
-                  <ChevronDown />
-                </div>
-              </Button>}
+            <div
+              className={clx("grid grid-cols-2 w-full gap-x-4", {
+                "!grid-cols-1": isSimple,
+              })}
+            >
+              {!isSimple && (
+                <Button
+                  onClick={open}
+                  variant="secondary"
+                  className="w-full"
+                  data-testid="mobile-actions-button"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span>
+                      {variant
+                        ? Object.values(options).join(" / ")
+                        : "Kies een uitvoering"}
+                    </span>
+                    <ChevronDown />
+                  </div>
+                </Button>
+              )}
               <button
                 onClick={handleAddToCart}
-                disabled={!inStock || !variant}
+                disabled={!inStock || !variant || isAdding || optionsDisabled}
                 data-testid="mobile-cart-button"
-                className="w-full h-12 rounded-full bg-spd-green hover:bg-spd-green-dark disabled:opacity-50 text-white font-semibold text-sm transition-colors"
+                className="spd-button spd-add-button"
               >
-                {isAdding ? "Toevoegen..." : !variant ? "Kies variant" : !inStock ? "Niet op voorraad" : "In winkelwagen"}
+                {isAdding
+                  ? "Toevoegen..."
+                  : !variant
+                    ? "Kies variant"
+                    : !inStock
+                      ? "Niet op voorraad"
+                      : "In winkelwagen"}
               </button>
             </div>
           </div>
@@ -160,6 +173,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   <div className="w-full flex justify-end pr-6">
                     <button
                       onClick={close}
+                      aria-label="Uitvoeringen sluiten"
                       className="bg-white w-12 h-12 rounded-full text-ui-fg-base flex justify-center items-center"
                       data-testid="close-modal-button"
                     >

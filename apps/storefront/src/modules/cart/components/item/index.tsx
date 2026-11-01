@@ -1,5 +1,7 @@
 "use client"
 
+import { getProductLabel } from "@lib/util/catalog-presentation"
+
 import { Table, Text, clx } from "@modules/common/components/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
@@ -57,6 +59,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           <Thumbnail
             thumbnail={item.thumbnail}
             images={item.variant?.product?.images}
+            alt={item.product_title || item.title}
             size="square"
           />
         </LocalizedClientLink>
@@ -67,7 +70,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           className="txt-medium-plus text-ui-fg-base"
           data-testid="product-title"
         >
-          {item.product_title}
+          {getProductLabel(item.product_title || item.title)}
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
       </Table.Cell>
@@ -77,6 +80,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <CartItemSelect
+              aria-label="Aantal"
               value={item.quantity}
               onChange={(value) => changeQuantity(parseInt(value.target.value))}
               className="w-14 h-10 p-4"
@@ -91,12 +95,8 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
                   <option value={i + 1} key={i}>
                     {i + 1}
                   </option>
-                )
+                ),
               )}
-
-              <option value={1} key={1}>
-                1
-              </option>
             </CartItemSelect>
             {updating && <Spinner />}
           </div>

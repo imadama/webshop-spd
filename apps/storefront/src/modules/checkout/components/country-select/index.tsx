@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react"
+import { forwardRef, useId, useImperativeHandle, useMemo, useRef } from "react"
 
 import NativeSelect, {
   NativeSelectProps,
@@ -10,12 +10,14 @@ const CountrySelect = forwardRef<
   NativeSelectProps & {
     region?: HttpTypes.StoreRegion
   }
->(({ placeholder = "Country", region, defaultValue, ...props }, ref) => {
+>(({ placeholder = "Land", region, defaultValue, ...props }, ref) => {
+  const uniqueId = useId()
+  const id = props.id || uniqueId
   const innerRef = useRef<HTMLSelectElement>(null)
 
   useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
     ref,
-    () => innerRef.current
+    () => innerRef.current,
   )
 
   const countryOptions = useMemo(() => {
@@ -25,23 +27,35 @@ const CountrySelect = forwardRef<
 
     return region.countries?.map((country) => ({
       value: country.iso_2,
-      label: country.display_name,
+      label: country.iso_2
+        ? new Intl.DisplayNames(["nl"], { type: "region" }).of(
+            country.iso_2.toUpperCase(),
+          )
+        : country.display_name,
     }))
   }, [region])
 
   return (
-    <NativeSelect
-      ref={innerRef}
-      placeholder={placeholder}
-      defaultValue={defaultValue}
-      {...props}
-    >
-      {countryOptions?.map(({ value, label }, index) => (
-        <option key={index} value={value}>
-          {label}
-        </option>
-      ))}
-    </NativeSelect>
+    <div className="spd-field">
+      <label htmlFor={id}>
+        {placeholder}
+        {props.required && <span aria-hidden="true"> *</span>}
+      </label>
+      <NativeSelect
+        ref={innerRef}
+        placeholder="Kies een land"
+        defaultValue={defaultValue}
+        {...props}
+        id={id}
+        aria-label={props["aria-label"] || placeholder}
+      >
+        {countryOptions?.map(({ value, label }, index) => (
+          <option key={index} value={value}>
+            {label}
+          </option>
+        ))}
+      </NativeSelect>
+    </div>
   )
 })
 

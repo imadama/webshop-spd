@@ -79,7 +79,7 @@ const StripePaymentButton = ({
   const card = elements?.getElement("card")
 
   const session = cart.payment_collection?.payment_sessions?.find(
-    (s) => s.status === "pending"
+    (s) => s.status === "pending",
   )
 
   const disabled = !stripe || !elements ? true : false
@@ -149,7 +149,7 @@ const StripePaymentButton = ({
         isLoading={submitting}
         data-testid={dataTestId}
       >
-        Place order
+        Bestelling plaatsen
       </Button>
       <ErrorMessage
         error={errorMessage}
@@ -172,7 +172,7 @@ const MolliePaymentButton = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const session = cart.payment_collection?.payment_sessions?.find((s) =>
-    s.provider_id?.startsWith("pp_mollie_")
+    s.provider_id?.startsWith("pp_mollie_"),
   )
   const checkoutUrl = (session?.data as Record<string, unknown> | undefined)
     ?.checkout_url as string | undefined
@@ -234,7 +234,7 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
         size="large"
         data-testid="submit-order-button"
       >
-        Place order
+        Bestelling plaatsen
       </Button>
       <ErrorMessage
         error={errorMessage}

@@ -1,4 +1,4 @@
-import { Button } from "@modules/common/components/ui"
+import { getProductLabel } from "@lib/util/catalog-presentation"
 import { useMemo } from "react"
 
 import Thumbnail from "@modules/products/components/thumbnail"
@@ -30,7 +30,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
       </div>
       <div className="flex items-center divide-x divide-gray-200 text-small-regular text-ui-fg-base">
         <span className="pr-2" data-testid="order-created-at">
-          {new Date(order.created_at).toDateString()}
+          {new Date(order.created_at).toLocaleDateString("nl-NL")}
         </span>
         <span className="px-2" data-testid="order-amount">
           {convertToLocale({
@@ -39,11 +39,11 @@ const OrderCard = ({ order }: OrderCardProps) => {
           })}
         </span>
         <span className="pl-2">{`${numberOfLines} ${
-          numberOfLines > 1 ? "items" : "item"
+          numberOfLines === 1 ? "artikel" : "artikelen"
         }`}</span>
       </div>
       <div className="grid grid-cols-2 small:grid-cols-4 gap-4 my-4">
-        {order.items?.slice(0, 3).map((i) => {
+        {order.items?.slice(0, 4).map((i) => {
           return (
             <div
               key={i.id}
@@ -56,7 +56,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
                   className="text-ui-fg-base font-semibold"
                   data-testid="item-title"
                 >
-                  {i.title}
+                  {getProductLabel(i.title)}
                 </span>
                 <span className="ml-2">x</span>
                 <span data-testid="item-quantity">{i.quantity}</span>
@@ -67,17 +67,19 @@ const OrderCard = ({ order }: OrderCardProps) => {
         {numberOfProducts > 4 && (
           <div className="w-full h-full flex flex-col items-center justify-center">
             <span className="text-small-regular text-ui-fg-base">
-              + {numberOfLines - 4}
+              + {numberOfProducts - 4}
             </span>
-            <span className="text-small-regular text-ui-fg-base">more</span>
+            <span className="text-small-regular text-ui-fg-base">meer</span>
           </div>
         )}
       </div>
       <div className="flex justify-end">
-        <LocalizedClientLink href={`/account/orders/details/${order.id}`}>
-          <Button data-testid="order-details-link" variant="secondary">
-            See details
-          </Button>
+        <LocalizedClientLink
+          href={`/account/orders/details/${order.id}`}
+          className="spd-button spd-button-secondary"
+          data-testid="order-details-link"
+        >
+          Bekijk gegevens
         </LocalizedClientLink>
       </div>
     </div>

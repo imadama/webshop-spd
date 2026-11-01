@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
+import ErrorMessage from "@modules/checkout/components/error-message"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -20,12 +21,14 @@ type ProductActionsProps = {
 }
 
 const optionsAsKeymap = (
-  variantOptions: HttpTypes.StoreProductVariant["options"]
+  variantOptions: HttpTypes.StoreProductVariant["options"] | undefined,
 ) => {
-  return variantOptions?.reduce((acc: Record<string, string>, varopt) => {
-    if (varopt.option_id) acc[varopt.option_id] = varopt.value
-    return acc
-  }, {})
+  return (
+    variantOptions?.reduce((acc: Record<string, string>, varopt) => {
+      if (varopt.option_id) acc[varopt.option_id] = varopt.value
+      return acc
+    }, {}) ?? {}
+  )
 }
 
 export default function ProductActions({
@@ -36,8 +39,17 @@ export default function ProductActions({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [options, setOptions] = useState<Record<string, string | undefined>>({})
+  const [options, setOptions] = useState<Record<string, string | undefined>>(
+    () => {
+      const initial =
+        product.variants?.find(
+          (variant) => variant.id === searchParams.get("v_id"),
+        ) ?? (product.variants?.length === 1 ? product.variants[0] : undefined)
+      return optionsAsKeymap(initial?.options) ?? {}
+    },
+  )
   const [isAdding, setIsAdding] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
@@ -89,7 +101,9 @@ export default function ProductActions({
       params.delete("v_id")
     }
 
-    router.replace(pathname + "?" + params.toString())
+    router.replace(pathname + (params.size ? "?" + params.toString() : ""), {
+      scroll: false,
+    })
   }, [selectedVariant, isValidVariant])
 
   // check if the selected variant is in stock
@@ -124,20 +138,29 @@ export default function ProductActions({
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) return null
 
+    setError(null)
     setIsAdding(true)
 
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity: 1,
-      countryCode,
-    })
-
-    setIsAdding(false)
+    try {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity: 1,
+        countryCode,
+      })
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Toevoegen is niet gelukt. Probeer het opnieuw.",
+      )
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   return (
     <>
-      <div className="flex flex-col gap-y-2" ref={actionsRef}>
+      <div className="spd-product-actions" ref={actionsRef}>
         <div>
           {(product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
@@ -172,29 +195,57 @@ export default function ProductActions({
             !isValidVariant
           }
           data-testid="add-product-button"
-          className="w-full h-12 rounded-full bg-spd-green hover:bg-spd-green-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors duration-200 flex items-center justify-center gap-2"
+          className="spd-button spd-add-button"
         >
           {isAdding ? (
             <span className="flex items-center gap-2">
-              <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              <svg
+                className="animate-spin h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                />
               </svg>
               Toevoegen...
             </span>
-          ) : !selectedVariant && !options ? (
+          ) : !selectedVariant ? (
             "Kies een variant"
           ) : !inStock || !isValidVariant ? (
             "Niet op voorraad"
           ) : (
             <span className="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7A1 1 0 007 17h11M7 13L5.4 5M17 17a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7A1 1 0 007 17h11M7 13L5.4 5M17 17a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
+                />
               </svg>
               In winkelwagen
             </span>
           )}
         </button>
+        <ErrorMessage error={error} data-testid="add-product-error" />
         <MobileActions
           product={product}
           variant={selectedVariant}

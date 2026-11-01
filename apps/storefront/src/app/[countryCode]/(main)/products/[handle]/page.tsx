@@ -4,6 +4,7 @@ import { listProducts } from "@lib/data/products"
 import { getRegion, listRegions } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
 import { HttpTypes } from "@medusajs/types"
+import { getProductLabel } from "@lib/util/catalog-presentation"
 
 export const dynamic = "force-dynamic"
 
@@ -15,7 +16,7 @@ type Props = {
 export async function generateStaticParams() {
   try {
     const countryCodes = await listRegions().then((regions) =>
-      regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
+      regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat(),
     )
 
     if (!countryCodes) {
@@ -41,14 +42,14 @@ export async function generateStaticParams() {
         countryData.products.map((product) => ({
           countryCode: countryData.country,
           handle: product.handle,
-        }))
+        })),
       )
       .filter((param) => param.handle)
   } catch (error) {
     console.error(
       `Failed to generate static paths for product pages: ${
         error instanceof Error ? error.message : "Unknown error"
-      }.`
+      }.`,
     )
     return []
   }
@@ -56,7 +57,7 @@ export async function generateStaticParams() {
 
 function getImagesForVariant(
   product: HttpTypes.StoreProduct,
-  selectedVariantId?: string
+  selectedVariantId?: string,
 ) {
   if (!selectedVariantId || !product.variants) {
     return product.images
@@ -90,10 +91,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.title} | Medusa Store`,
+    title: getProductLabel(product.title),
     description: `${product.title}`,
     openGraph: {
-      title: `${product.title} | Medusa Store`,
+      title: getProductLabel(product.title),
       description: `${product.title}`,
       images: product.thumbnail ? [product.thumbnail] : [],
     },
@@ -116,11 +117,11 @@ export default async function ProductPage(props: Props) {
     queryParams: { handle: params.handle },
   }).then(({ response }) => response.products[0])
 
-  const images = getImagesForVariant(pricedProduct, selectedVariantId)
-
   if (!pricedProduct) {
     notFound()
   }
+
+  const images = getImagesForVariant(pricedProduct, selectedVariantId)
 
   return (
     <ProductTemplate

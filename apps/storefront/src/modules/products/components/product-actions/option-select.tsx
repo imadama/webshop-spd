@@ -21,9 +21,19 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
 }) => {
   const filteredOptions = (option.values ?? []).map((v) => v.value)
 
+  const labels: Record<string, string> = {
+    Title: "Uitvoering",
+    Color: "Kleur",
+    Colour: "Kleur",
+    Size: "Maat",
+    Length: "Lengte",
+    Power: "Vermogen",
+  }
+  const label = labels[title] || title
+
   return (
     <div className="flex flex-col gap-y-3">
-      <span className="text-sm">Select {title}</span>
+      <span className="text-sm">Kies {label}</span>
       <div
         className="flex flex-wrap justify-between gap-2"
         data-testid={dataTestId}
@@ -33,13 +43,15 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
             <button
               onClick={() => updateOption(option.id, v)}
               key={v}
+              type="button"
+              aria-pressed={v === current}
               className={clx(
-                "border-ui-border-base bg-ui-bg-subtle border text-small-regular h-10 rounded-rounded p-2 flex-1 ",
+                "spd-option-button border-ui-border-base bg-ui-bg-subtle border text-small-regular h-10 rounded-rounded p-2 flex-1 ",
                 {
                   "border-ui-border-interactive": v === current,
                   "hover:shadow-elevation-card-rest transition-shadow ease-in-out duration-150":
                     v !== current,
-                }
+                },
               )}
               disabled={disabled}
               data-testid="option-button"

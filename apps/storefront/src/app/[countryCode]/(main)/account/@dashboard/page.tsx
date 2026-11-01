@@ -6,8 +6,9 @@ import { retrieveCustomer } from "@lib/data/customer"
 import { listOrders } from "@lib/data/orders"
 
 export const metadata: Metadata = {
-  title: "Account",
-  description: "Overview of your account activity.",
+  title: { absolute: "Mijn account — SmartPowerDeals" },
+  description:
+    "Bekijk je gegevens en recente bestellingen bij SmartPowerDeals.",
 }
 
 export default async function OverviewTemplate() {

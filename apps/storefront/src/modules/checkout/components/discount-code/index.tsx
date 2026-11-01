@@ -1,6 +1,12 @@
 "use client"
 
-import { Badge, Heading, Input, Label, Text } from "@modules/common/components/ui"
+import {
+  Badge,
+  Heading,
+  Input,
+  Label,
+  Text,
+} from "@modules/common/components/ui"
 import React from "react"
 
 import { applyPromotions } from "@lib/data/cart"
@@ -21,11 +27,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const { promotions = [] } = cart
   const removePromotionCode = async (code: string) => {
     const validPromotions = promotions.filter(
-      (promotion) => promotion.code !== code
+      (promotion) => promotion.code !== code,
     )
 
     await applyPromotions(
-      validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!)
+      validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!),
     )
   }
 
@@ -63,8 +69,10 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
               type="button"
               className="txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="add-discount-button"
+              aria-label="Kortingscode toevoegen"
+              aria-expanded={isOpen}
             >
-              Add Promotion Code(s)
+              Kortingscode toevoegen
             </button>
 
             {/* <Tooltip content="You can add multiple promotion codes">
@@ -82,12 +90,13 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                   type="text"
                   autoFocus={false}
                   data-testid="discount-input"
+                  aria-label="Kortingscode"
                 />
                 <SubmitButton
                   variant="secondary"
                   data-testid="discount-apply-button"
                 >
-                  Apply
+                  Toepassen
                 </SubmitButton>
               </div>
 
@@ -102,9 +111,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
         {promotions.length > 0 && (
           <div className="w-full flex items-center">
             <div className="flex flex-col w-full">
-              <Heading className="txt-medium mb-2">
-                Promotion(s) applied:
-              </Heading>
+              <Heading className="txt-medium mb-2">Toegepaste korting:</Heading>
 
               {promotions.map((promotion) => {
                 return (
@@ -158,7 +165,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                       >
                         <Trash size={14} />
                         <span className="sr-only">
-                          Remove discount code from order
+                          Kortingscode verwijderen
                         </span>
                       </button>
                     )}
